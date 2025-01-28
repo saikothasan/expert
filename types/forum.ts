@@ -13,9 +13,9 @@ export interface TelegramEntry {
 
 export interface User {
   id: string
-  email: string
   username: string
-  bio: string
+  email?: string
+  bio?: string
 }
 
 export interface Comment {
