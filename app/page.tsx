@@ -29,13 +29,10 @@ export default function Home() {
       console.error("Error fetching popular tags:", error)
     } else {
       const allTags = data.flatMap((entry) => entry.tags)
-      const tagCounts = allTags.reduce(
-        (acc, tag) => {
-          acc[tag] = (acc[tag] || 0) + 1
-          return acc
-        },
-        {} as Record<string, number>,
-      )
+      const tagCounts: Record<string, number> = allTags.reduce((acc, tag) => {
+        acc[tag] = (acc[tag] || 0) + 1
+        return acc
+      }, {})
 
       const sortedTags = Object.entries(tagCounts)
         .sort((a, b) => b[1] - a[1])
