@@ -33,7 +33,7 @@ export default function RootLayout({
           <main className="flex-grow container mx-auto px-4 sm:px-6 lg:px-8 py-8">{children}</main>
           <Footer />
         </AuthProvider>
-        <GoogleAnalytics GA_MEASUREMENT_ID={GA_MEASUREMENT_ID} />
+        <Analytics/>
       </body>
     </html>
   )
