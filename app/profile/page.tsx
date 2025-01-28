@@ -8,6 +8,7 @@ import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Textarea } from "@/components/ui/textarea"
 import { toast } from "@/hooks/use-toast"
+import SEO from "../../components/SEO"
 
 export default function Profile() {
   const { user } = useAuth()
@@ -57,30 +58,48 @@ export default function Profile() {
   }
 
   return (
-    <div className="max-w-2xl mx-auto mt-8">
-      <h2 className="text-2xl font-bold mb-4">Your Profile</h2>
-      <form onSubmit={handleSubmit} className="space-y-4">
-        <div>
-          <label htmlFor="email" className="block text-sm font-medium text-gray-700">
-            Email
-          </label>
-          <Input id="email" type="email" value={user.email} disabled />
+    <>
+      <SEO
+        title="Your Profile"
+        description="Manage your Telegram Forum profile and settings."
+        keywords="profile, settings, account, telegram forum"
+      />
+      <div className="max-w-2xl mx-auto">
+        <h1 className="text-3xl font-bold text-gray-900 mb-6">Your Profile</h1>
+        <div className="bg-white shadow sm:rounded-lg">
+          <div className="px-4 py-5 sm:p-6">
+            <form onSubmit={handleSubmit} className="space-y-6">
+              <div>
+                <label htmlFor="email" className="block text-sm font-medium text-gray-700">
+                  Email
+                </label>
+                <Input id="email" type="email" value={user.email} disabled className="mt-1" />
+              </div>
+              <div>
+                <label htmlFor="username" className="block text-sm font-medium text-gray-700">
+                  Username
+                </label>
+                <Input
+                  id="username"
+                  type="text"
+                  value={username}
+                  onChange={(e) => setUsername(e.target.value)}
+                  required
+                  className="mt-1"
+                />
+              </div>
+              <div>
+                <label htmlFor="bio" className="block text-sm font-medium text-gray-700">
+                  Bio
+                </label>
+                <Textarea id="bio" value={bio} onChange={(e) => setBio(e.target.value)} rows={4} className="mt-1" />
+              </div>
+              <Button type="submit">Update Profile</Button>
+            </form>
+          </div>
         </div>
-        <div>
-          <label htmlFor="username" className="block text-sm font-medium text-gray-700">
-            Username
-          </label>
-          <Input id="username" type="text" value={username} onChange={(e) => setUsername(e.target.value)} required />
-        </div>
-        <div>
-          <label htmlFor="bio" className="block text-sm font-medium text-gray-700">
-            Bio
-          </label>
-          <Textarea id="bio" value={bio} onChange={(e) => setBio(e.target.value)} rows={4} />
-        </div>
-        <Button type="submit">Update Profile</Button>
-      </form>
-    </div>
+      </div>
+    </>
   )
 }
 
