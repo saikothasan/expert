@@ -4,6 +4,12 @@ import Script from "next/script"
 import { usePathname, useSearchParams } from "next/navigation"
 import { useEffect } from "react"
 
+declare global {
+  interface Window {
+    gtag: (command: string, gaId: string, options: object) => void
+  }
+}
+
 export default function GoogleAnalytics({ GA_MEASUREMENT_ID }: { GA_MEASUREMENT_ID: string }) {
   const pathname = usePathname()
   const searchParams = useSearchParams()
@@ -24,7 +30,7 @@ export default function GoogleAnalytics({ GA_MEASUREMENT_ID }: { GA_MEASUREMENT_
         dangerouslySetInnerHTML={{
           __html: `
             window.dataLayer = window.dataLayer || [];
-            function gtag(){dataLayer.push(arguments);}
+            function gtag(){window.dataLayer.push(arguments);}
             gtag('js', new Date());
             gtag('config', '${GA_MEASUREMENT_ID}');
           `,
