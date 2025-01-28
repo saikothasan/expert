@@ -12,10 +12,15 @@ import { Textarea } from "@/components/ui/textarea"
 import { toast } from "@/hooks/use-toast"
 import { Badge } from "@/components/ui/badge"
 import { Star, BookmarkIcon } from "lucide-react"
+import Link from "next/link"
 
 const ITEMS_PER_PAGE = 10
 
-export default function EntryList() {
+interface EntryListProps {
+  tag?: string
+}
+
+export default function EntryList({ tag }: EntryListProps) {
   const [entries, setEntries] = useState<TelegramEntry[]>([])
   const [page, setPage] = useState(1)
   const [hasMore, setHasMore] = useState(true)
@@ -30,10 +35,14 @@ export default function EntryList() {
 
   useEffect(() => {
     fetchEntries()
-  }, [page, sortOption, searchTerm]) //This line was already correct.  The comment in the updates was unnecessary.
+  }, [page, sortOption, searchTerm, tag]) //This line was already correct.  The comment in the updates was unnecessary.
 
   const fetchEntries = async () => {
     let query = supabase.from("telegram_entries").select("*")
+
+    if (tag) {
+      query = query.contains("tags", [tag])
+    }
 
     if (searchTerm) {
       query = query.or(`title.ilike.%${searchTerm}%,description.ilike.%${searchTerm}%`)
@@ -74,7 +83,16 @@ export default function EntryList() {
     // Fetch comments
     const { data: commentsData, error: commentsError } = await supabase
       .from("comments")
-      .select("*, user:profiles(*)")
+      .select(`
+        id,
+        created_at,
+        content,
+        entry_id,
+        user_id,
+        profiles (
+          username
+        )
+      `)
       .in("entry_id", entryIds)
       .order("created_at", { ascending: false })
 
@@ -86,7 +104,10 @@ export default function EntryList() {
           if (!acc[comment.entry_id]) {
             acc[comment.entry_id] = []
           }
-          acc[comment.entry_id].push(comment)
+          acc[comment.entry_id].push({
+            ...comment,
+            user: { username: comment.profiles.username },
+          })
           return acc
         },
         {} as { [key: number]: Comment[] },
@@ -208,7 +229,16 @@ export default function EntryList() {
         user_id: user.id,
         content: newComment[entryId],
       })
-      .select("*, user:profiles(*)")
+      .select(`
+        id,
+        created_at,
+        content,
+        entry_id,
+        user_id,
+        profiles (
+          username
+        )
+      `)
       .single()
 
     if (error) {
@@ -218,9 +248,13 @@ export default function EntryList() {
         variant: "destructive",
       })
     } else {
+      const newCommentWithUser = {
+        ...data,
+        user: { username: data.profiles.username },
+      }
       setComments((prevComments) => ({
         ...prevComments,
-        [entryId]: [data, ...(prevComments[entryId] || [])],
+        [entryId]: [newCommentWithUser, ...(prevComments[entryId] || [])],
       }))
       setNewComment((prevNewComment) => ({
         ...prevNewComment,
@@ -260,7 +294,7 @@ export default function EntryList() {
         ...prevRatings,
         [entryId]: data,
       }))
-      fetchEntries() // Refetch to update average rating
+      fetchEntries()
     }
   }
 
@@ -376,9 +410,11 @@ export default function EntryList() {
                 <p className="text-sm text-gray-500 mb-2">{entry.description}</p>
                 <div className="flex flex-wrap gap-2 mb-2">
                   {entry.tags.map((tag, index) => (
-                    <Badge key={index} variant="secondary">
-                      {tag}
-                    </Badge>
+                    <Link href={`/tag/${tag}`} key={index}>
+                      <Badge variant="secondary" className="cursor-pointer hover:bg-secondary/80">
+                        {tag}
+                      </Badge>
+                    </Link>
                   ))}
                 </div>
                 <a href={entry.url} target="_blank" rel="noopener noreferrer" className="text-blue-500 hover:underline">
