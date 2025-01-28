@@ -35,7 +35,7 @@ export default function EntryList({ tag }: EntryListProps) {
 
   useEffect(() => {
     fetchEntries()
-  }, [page, sortOption, searchTerm, tag]) //This line was already correct.  The comment in the updates was unnecessary.
+  }, [page, sortOption, searchTerm, tag])
 
   const fetchEntries = async () => {
     let query = supabase.from("telegram_entries").select("*")
@@ -90,7 +90,8 @@ export default function EntryList({ tag }: EntryListProps) {
         entry_id,
         user_id,
         profiles (
-          username
+          username,
+          bio
         )
       `)
       .in("entry_id", entryIds)
@@ -106,7 +107,12 @@ export default function EntryList({ tag }: EntryListProps) {
           }
           acc[comment.entry_id].push({
             ...comment,
-            user: { username: comment.profiles.username },
+            user: {
+              id: comment.user_id,
+              username: comment.profiles.username,
+              email: "", // We don't have this information, so we'll leave it empty
+              bio: "", // We don't have this information, so we'll leave it empty
+            },
           })
           return acc
         },
@@ -236,7 +242,8 @@ export default function EntryList({ tag }: EntryListProps) {
         entry_id,
         user_id,
         profiles (
-          username
+          username,
+          bio
         )
       `)
       .single()
@@ -250,7 +257,12 @@ export default function EntryList({ tag }: EntryListProps) {
     } else {
       const newCommentWithUser = {
         ...data,
-        user: { username: data.profiles.username },
+        user: {
+          id: data.user_id,
+          username: data.profiles.username,
+          email: "", // We don't have this information
+          bio: data.profiles.bio || "",
+        },
       }
       setComments((prevComments) => ({
         ...prevComments,
