@@ -109,9 +109,9 @@ export default function EntryList({ tag }: EntryListProps) {
             ...comment,
             user: {
               id: comment.user_id,
-              username: comment.profiles.username,
+              username: comment.profiles[0]?.username || "",
               email: "", // We don't have this information, so we'll leave it empty
-              bio: "", // We don't have this information, so we'll leave it empty
+              bio: comment.profiles[0]?.bio || "", // Use the bio if available
             },
           })
           return acc
@@ -259,9 +259,9 @@ export default function EntryList({ tag }: EntryListProps) {
         ...data,
         user: {
           id: data.user_id,
-          username: data.profiles.username,
+          username: data.profiles[0]?.username || "",
           email: "", // We don't have this information
-          bio: data.profiles.bio || "",
+          bio: data.profiles[0]?.bio || "",
         },
       }
       setComments((prevComments) => ({
