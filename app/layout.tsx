@@ -4,7 +4,7 @@ import { AuthProvider } from "../contexts/AuthContext"
 import Header from "../components/Header"
 import Footer from "../components/Footer"
 import SEO from "../components/SEO"
-import GoogleAnalytics from "../components/GoogleAnalytics"
+import { Analytics } from "@vercel/analytics/react"
 
 const inter = Inter({ subsets: ["latin"] })
 
