@@ -4,6 +4,7 @@ import { AuthProvider } from "../contexts/AuthContext"
 import Header from "../components/Header"
 import Footer from "../components/Footer"
 import SEO from "../components/SEO"
+import GoogleAnalytics from "../components/GoogleAnalytics"
 
 const inter = Inter({ subsets: ["latin"] })
 
@@ -17,6 +18,8 @@ export default function RootLayout({
 }: {
   children: React.ReactNode
 }) {
+  const GA_MEASUREMENT_ID = process.env.NEXT_PUBLIC_GA_MEASUREMENT_ID || ""
+
   return (
     <html lang="en">
       <SEO
@@ -30,6 +33,7 @@ export default function RootLayout({
           <main className="flex-grow container mx-auto px-4 sm:px-6 lg:px-8 py-8">{children}</main>
           <Footer />
         </AuthProvider>
+        <GoogleAnalytics GA_MEASUREMENT_ID={GA_MEASUREMENT_ID} />
       </body>
     </html>
   )
